@@ -7,7 +7,9 @@ workflow ANALYSIS {
     
     main:
     FASTQC(data)
-    MULTIQC(FASTQC.out.zip.map{ it[1] }.collect())
+    // Gather qc output
+    qc = FASTQC.out.zip.collect{ it[1] }
+    MULTIQC(qc)
 
     emit:
     MULTIQC.out
