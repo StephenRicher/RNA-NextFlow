@@ -1,6 +1,6 @@
 process FASTQC {
     input:
-    tuple val(id), path(filename)
+    tuple val(id), path(fastq)
 
     output:
     tuple val(id), path('*.zip') , emit: zip
@@ -8,6 +8,6 @@ process FASTQC {
 
     script:
     """
-    fastqc $filename
+    fastqc $fastq
     """
 }
