@@ -2,7 +2,7 @@
 
 ## A Nextwork workflow for automated processing and quality control of RNA-seq data.
 
-**Note: This workflow is in early development and is not yet suitable for analysis.**
+*Note: This workflow is in early development and is not yet suitable for analysis.*
 
 RNA-NextFlow aims to provide an accessible and user-friendly experience to analyse RNA-seq and will utilise a wide range of published tools.
 
