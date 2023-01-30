@@ -7,9 +7,8 @@ process CUTADAPT {
     tuple val(id), path('*.txt'),      emit: qc
 
     script:
+    def args = task.ext.args ?: ''
     """
-    cutadapt \\
-        -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA \\
-        -o trimmed.fastq.gz $fastq > qc.txt
+    cutadapt $args -o trimmed.fastq.gz $fastq > qc.txt
     """
 }
