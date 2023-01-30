@@ -3,7 +3,7 @@ process MULTIQC {
     path files
 
     output:
-    path 'multiqc_report.html'
+    path 'multiqc_report.html', emit: html
 
     script:
     """
