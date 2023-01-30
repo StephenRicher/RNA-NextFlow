@@ -1,4 +1,5 @@
 include { FASTQC } from './modules/fastqc'
+include { CUTADAPT } from './modules/cutadapt'
 include { MULTIQC } from './modules/multiqc'
 
 workflow ANALYSIS {
@@ -7,9 +8,14 @@ workflow ANALYSIS {
     
     main:
     FASTQC(data)
+    CUTADAPT(data)
+
     // Gather qc output
-    qc = FASTQC.out.zip.collect{ it[1] }
-    MULTIQC(qc)
+    qc_reports = Channel.of().concat( 
+      FASTQC.out.zip,
+      CUTADAPT.out.qc
+    ).collect{ it[1] }
+    MULTIQC(qc_reports)
 
     emit:
     MULTIQC.out
