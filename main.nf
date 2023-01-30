@@ -1,3 +1,6 @@
+// RNA-NextFlow
+// Best Practice Guidelines: https://nf-co.re/docs/contributing/modules
+
 include { FASTQC } from './modules/fastqc'
 include { CUTADAPT } from './modules/cutadapt'
 include { MULTIQC } from './modules/multiqc'
@@ -10,7 +13,7 @@ workflow ANALYSIS {
     FASTQC(data)
     CUTADAPT(data)
 
-    // Gather qc output
+    // Combine + Collect QC reports
     qc_reports = Channel.of().concat( 
       FASTQC.out.zip,
       CUTADAPT.out.qc
@@ -18,7 +21,7 @@ workflow ANALYSIS {
     MULTIQC(qc_reports)
 
     emit:
-    MULTIQC.out
+    multiqc_report = MULTIQC.out
 }
 
 workflow {
@@ -47,4 +50,3 @@ def create_channels(LinkedHashMap row) {
 }
 
 
-// https://nf-co.re/docs/contributing/modules
