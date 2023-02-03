@@ -1,4 +1,6 @@
-HFD-1,./data/HFD-1-chr3L-subsample-R1.fastq.gz
-HFD-2,./data/HFD-2-chr3L-subsample-R1.fastq.gz
-HSD-1,./data/HSD-1-chr3L-subsample-R1.fastq.gz
-HSD-2,./data/HSD-2-chr3L-subsample-R1.fastq.gz
+hcc1395_normal_1,./data/hcc1395_normal_rep1_r1.fastq.gz,./data/hcc1395_normal_rep1_r2.fastq.gz
+hcc1395_normal_2,./data/hcc1395_normal_rep2_r1.fastq.gz,./data/hcc1395_normal_rep2_r2.fastq.gz
+hcc1395_normal_3,./data/hcc1395_normal_rep3_r1.fastq.gz,./data/hcc1395_normal_rep3_r2.fastq.gz
+hcc1395_tumor_1,./data/hcc1395_tumor_rep1_r1.fastq.gz,./data/hcc1395_tumor_rep1_r2.fastq.gz
+hcc1395_tumor_2,./data/hcc1395_tumor_rep2_r1.fastq.gz,./data/hcc1395_tumor_rep2_r2.fastq.gz
+hcc1395_tumor_3,./data/hcc1395_tumor_rep3_r1.fastq.gz,./data/hcc1395_tumor_rep3_r2.fastq.gz

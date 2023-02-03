@@ -2,5 +2,6 @@ work/
 results/
 .nextflow*
 genome/*
+.DS_Store
 
 !genome/get_genome.sh
