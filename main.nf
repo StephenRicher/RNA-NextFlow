@@ -32,7 +32,8 @@ workflow {
         .ifEmpty { exit 1, "ERROR: Cannot find file: ${params.samples}" }
         .splitCsv(header: ['id', 'fastq_r1', 'fastq_r2'])
         .map{ create_channels(it) }
-    ANALYSIS(data)
+    data.flatMap{ flatten_sample(it) }.view()
+    //ANALYSIS(data)
 }
 
 // Function to get list of samples
@@ -54,21 +55,17 @@ def create_channels(LinkedHashMap row) {
   return array
 }
 
-// Flattens paired read samples
-def flatten_samples(List sample) {
+// Flattens read samples
+def flatten_sample(List sample) {
+  def array = []
   sample_id = sample[0]
-  fastq_r1 = sample[1][0]
-  fastq_r2 = sample[1][1]
-  if (fastq_r2 == null) {
-    array = [
-      ["${sample_id}_R1", [fastq_r1] ]
-    ]
+  if (sample[1].size == 1) {
+    array = [ [sample_id, [sample[1][0]] ] ]
   } else {
-    array = [ 
-      ["${sample_id}_R1", [fastq_r1] ], 
-      ["${sample_id}_R2", [fastq_r2] ]
-    ]
+    sample[1].eachWithIndex { sub, i ->
+      array.add(["${sample_id}_R${i+1}", [sub] ])
+    }
   }
-
+  
   return array
 }
