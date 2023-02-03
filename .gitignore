@@ -1,4 +1,6 @@
 work/
 results/
 .nextflow*
+genome/*
 
+!genome/get_genome.sh

@@ -10,7 +10,8 @@ workflow ANALYSIS {
     data
     
     main:
-    FASTQC(data)
+    data_flat = data.flatMap{ flatten_samples(it) }
+    FASTQC(data_flat)
     CUTADAPT(data)
 
     // Combine + Collect QC reports
@@ -25,6 +26,7 @@ workflow ANALYSIS {
 }
 
 workflow {
+    // Read FASTQ data table
     data = Channel
         .fromPath(params.samples)
         .ifEmpty { exit 1, "ERROR: Cannot find file: ${params.samples}" }
@@ -33,20 +35,40 @@ workflow {
     ANALYSIS(data)
 }
 
-// Function to get list of [ meta, [ fastq_1, fastq_2 ] ]
+// Function to get list of samples
+// Single-end: [ ID, [ fastq_R1, fastq_R2 ] ]
+// Paired-end: [ ID, [ fastq_R1 ] ]
 def create_channels(LinkedHashMap row) {
-  def array = []
+  //def array = []
   if (!file(row.fastq_r1).exists()) {
     exit 1, "ERROR: Cannot find file: ${row.fastq_r1}"
   }
   if (row.fastq_r2 == null) {
-    array = [ row.id, file(row.fastq_r1) ]
+    array = [ row.id, [file(row.fastq_r1)] ]
   } else if (!file(row.fastq_r2).exists()) {
     exit 1, "ERROR: Cannot find file: ${row.fastq_r2}"
   } else {
     array = [ row.id, [file(row.fastq_r1), file(row.fastq_r2)]]
   }
+
   return array
 }
 
+// Flattens paired read samples
+def flatten_samples(List sample) {
+  sample_id = sample[0]
+  fastq_r1 = sample[1][0]
+  fastq_r2 = sample[1][1]
+  if (fastq_r2 == null) {
+    array = [
+      ["${sample_id}_R1", [fastq_r1] ]
+    ]
+  } else {
+    array = [ 
+      ["${sample_id}_R1", [fastq_r1] ], 
+      ["${sample_id}_R2", [fastq_r2] ]
+    ]
+  }
 
+  return array
+}
