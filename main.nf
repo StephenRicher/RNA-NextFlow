@@ -36,9 +36,9 @@ workflow {
     //ANALYSIS(data)
 }
 
-// Function to get list of samples
-// Single-end: [ ID, [ fastq_R1, fastq_R2 ] ]
-// Paired-end: [ ID, [ fastq_R1 ] ]
+// Function to get channel of (ID, samples)
+// Single-end: [ ID, [ fastq_R1 ] ]
+// Paired-end: [ ID, [ fastq_R1, fastq_R2 ] ]
 def create_channels(LinkedHashMap row) {
   //def array = []
   if (!file(row.fastq_r1).exists()) {
@@ -55,7 +55,9 @@ def create_channels(LinkedHashMap row) {
   return array
 }
 
-// Flattens read samples
+// Flattens multi-file sample channels
+// [ ID, [ fastq_R1, fastq_R2 ] ] -> 
+// [ [ ID, [ fastq_R1 ] ], [ ID, [ fastq_R2 ] ] ]
 def flatten_sample(List sample) {
   def array = []
   sample_id = sample[0]
