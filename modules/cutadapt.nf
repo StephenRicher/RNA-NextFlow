@@ -9,6 +9,6 @@ process CUTADAPT {
     script:
     def args = task.ext.args ?: ''
     """
-    cutadapt $args -o trimmed.fastq.gz $fastq > qc.txt
+    cutadapt $args -o trimmed.r1.fastq.gz -p timmed.r2.fastq.gz $fastq > qc.txt
     """
 }
