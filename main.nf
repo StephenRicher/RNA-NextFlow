@@ -10,7 +10,7 @@ workflow ANALYSIS {
     data
     
     main:
-    data_flat = data.flatMap{ flatten_samples(it) }
+    data_flat = data.flatMap{ flatten_sample(it) }
     FASTQC(data_flat)
     CUTADAPT(data)
 
@@ -26,14 +26,16 @@ workflow ANALYSIS {
 }
 
 workflow {
+    // Validate mandatory parameters
+    params.each{ k, v -> if (v==null) { exit 1, "Error: parameter '$k' not set." } }
     // Read FASTQ data table
     data = Channel
         .fromPath(params.samples)
         .ifEmpty { exit 1, "ERROR: Cannot find file: ${params.samples}" }
         .splitCsv(header: ['id', 'fastq_r1', 'fastq_r2'])
         .map{ create_channels(it) }
-    data.flatMap{ flatten_sample(it) }.view()
-    //ANALYSIS(data)
+    ANALYSIS(data)
+    
 }
 
 // Function to get channel of (ID, samples)
