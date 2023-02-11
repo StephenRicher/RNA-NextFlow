@@ -35,7 +35,6 @@ workflow {
         .splitCsv(header: ['id', 'fastq_r1', 'fastq_r2'])
         .map{ create_channels(it) }
     ANALYSIS(data)
-    
 }
 
 // Function to get channel of (ID, samples)
