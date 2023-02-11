@@ -1,0 +1,10 @@
+name: hisat2
+
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+
+dependencies:
+  - hisat2=2.2.1=py38he1b5a44_0
+  - samtools=1.16.1=h6899075_1

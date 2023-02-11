@@ -3,6 +3,7 @@
 
 include { FASTQC } from './modules/fastqc'
 include { CUTADAPT } from './modules/cutadapt'
+include { HISAT2 } from './modules/hisat2'
 include { MULTIQC } from './modules/multiqc'
 
 workflow ANALYSIS {
@@ -14,10 +15,15 @@ workflow ANALYSIS {
     FASTQC(data_flat)
     CUTADAPT(data)
 
+    index = Channel.fromPath( "${params.index}*.ht2" ).collect()
+    basename = file(params.index).getName().toString()
+    HISAT2(CUTADAPT.out.fastq, index)
+
     // Combine + Collect QC reports
     qc_reports = Channel.of().concat( 
       FASTQC.out.zip,
-      CUTADAPT.out.qc
+      CUTADAPT.out.qc,
+      HISAT2.out.qc
     ).collect{ it[1] }
     MULTIQC(qc_reports)
 
@@ -52,13 +58,12 @@ def create_channels(LinkedHashMap row) {
   } else {
     array = [ row.id, [file(row.fastq_r1), file(row.fastq_r2)]]
   }
-
   return array
 }
 
 // Flattens multi-file sample channels
-// [ ID, [ fastq_R1, fastq_R2 ] ] -> 
-// [ [ ID, [ fastq_R1 ] ], [ ID, [ fastq_R2 ] ] ]
+// [ ID, [ fastq_R1, fastq_R2 ] ]  
+// -> [ [ ID, [ fastq_R1 ] ], [ ID, [ fastq_R2 ] ] ]
 def flatten_sample(List sample) {
   def array = []
   sample_id = sample[0]
@@ -69,6 +74,5 @@ def flatten_sample(List sample) {
       array.add(["${sample_id}_R${i+1}", [sub] ])
     }
   }
-  
   return array
 }
