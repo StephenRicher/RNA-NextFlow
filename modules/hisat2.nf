@@ -1,7 +1,7 @@
 process HISAT2 {
     input:
     tuple val(id), path(fastq)
-    path(index)
+    path index
 
     output:
     tuple val(id), path('*.bam'),      emit: bam
@@ -11,7 +11,7 @@ process HISAT2 {
     def args = task.ext.args ?: ''
     basename = index[0].toString().replaceFirst('...ht2$',"")
     """
-    hisat2 $args -1 ${fastq[0]} -2 ${fastq[1]} -x $basename --summary-file qc.txt \
-    | samtools view -b > aligned.bam
+    hisat2 $args -1 ${fastq[0]} -2 ${fastq[1]} -x $basename --summary-file ${id}.summary.txt \
+    | samtools view -b > ${id}.aligned.bam
     """
 }

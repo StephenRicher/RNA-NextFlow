@@ -12,3 +12,6 @@ hisat2_extract_splice_sites.py GRCh38.gtf | awk '$1==22' > GRCh38.ss
 hisat2_extract_exons.py GRCh38.gtf | awk '$1==22' > GRCh38.exon
 
 hisat2-build --exon GRCh38.exon --ss GRCh38.ss GRCh38.chr22.fa GRCh38
+
+
+wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_43/gencode.v43.transcripts.fa.gz

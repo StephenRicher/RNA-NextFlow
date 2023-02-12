@@ -5,6 +5,8 @@ include { FASTQC } from './modules/fastqc'
 include { CUTADAPT } from './modules/cutadapt'
 include { HISAT2 } from './modules/hisat2'
 include { MULTIQC } from './modules/multiqc'
+include { SALMON_INDEX } from './modules/salmon_index'
+include { SALMON_QUANT } from './modules/salmon_quant'
 
 workflow ANALYSIS {
     take:
@@ -15,14 +17,19 @@ workflow ANALYSIS {
     FASTQC(data_flat)
     CUTADAPT(data)
 
+    transcriptome = Channel.fromPath( params.transcriptome )
+    SALMON_INDEX(transcriptome)
+    salmon_idx = SALMON_INDEX.out.index.collect()
+    SALMON_QUANT(CUTADAPT.out.fastq, salmon_idx)
+
     index = Channel.fromPath( "${params.index}*.ht2" ).collect()
-    basename = file(params.index).getName().toString()
     HISAT2(CUTADAPT.out.fastq, index)
 
     // Combine + Collect QC reports
     qc_reports = Channel.of().concat( 
       FASTQC.out.zip,
       CUTADAPT.out.qc,
+      SALMON_QUANT.out.quants,
       HISAT2.out.qc
     ).collect{ it[1] }
     MULTIQC(qc_reports)
@@ -40,6 +47,7 @@ workflow {
         .ifEmpty { exit 1, "ERROR: Cannot find file: ${params.samples}" }
         .splitCsv(header: ['id', 'fastq_r1', 'fastq_r2'])
         .map{ create_channels(it) }
+
     ANALYSIS(data)
 }
 
