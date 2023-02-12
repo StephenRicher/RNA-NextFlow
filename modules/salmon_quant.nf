@@ -4,7 +4,7 @@ process SALMON_QUANT {
     path index
 
     output:
-    tuple val(id), path('*/*'), emit: quants
+    tuple val(id), path('*'), emit: quants
     tuple val(id), path('*/lib_format_counts.json'), emit: info
 
     script:

@@ -7,6 +7,8 @@ include { HISAT2 } from './modules/hisat2'
 include { MULTIQC } from './modules/multiqc'
 include { SALMON_INDEX } from './modules/salmon_index'
 include { SALMON_QUANT } from './modules/salmon_quant'
+include { GET_STRAND } from './modules/get_strand'
+
 
 workflow ANALYSIS {
     take:
@@ -21,9 +23,10 @@ workflow ANALYSIS {
     SALMON_INDEX(transcriptome)
     salmon_idx = SALMON_INDEX.out.index.collect()
     SALMON_QUANT(CUTADAPT.out.fastq, salmon_idx)
-
+    GET_STRAND(SALMON_QUANT.out.info)
+    
     index = Channel.fromPath( "${params.index}*.ht2" ).collect()
-    HISAT2(CUTADAPT.out.fastq, index)
+    HISAT2(CUTADAPT.out.fastq, index, GET_STRAND.out.strand)
 
     // Combine + Collect QC reports
     qc_reports = Channel.of().concat( 
@@ -55,7 +58,7 @@ workflow {
 // Single-end: [ ID, [ fastq_R1 ] ]
 // Paired-end: [ ID, [ fastq_R1, fastq_R2 ] ]
 def create_channels(LinkedHashMap row) {
-  //def array = []
+  def array = []
   if (!file(row.fastq_r1).exists()) {
     exit 1, "ERROR: Cannot find file: ${row.fastq_r1}"
   }
