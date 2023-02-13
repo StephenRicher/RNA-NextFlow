@@ -10,7 +10,7 @@ process HISAT2 {
 
     script:
     def args = task.ext.args ?: ''
-    basename = index[0].toString().replaceFirst('...ht2$',"")
+    basename = index[0].toString().replaceFirst('...ht2$', "")
     """
     hisat2 $args -1 ${fastq[0]} -2 ${fastq[1]} -x $basename \
     --summary-file ${id}.summary.txt --rna-strandness $strand \
