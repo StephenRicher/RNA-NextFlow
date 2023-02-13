@@ -3,12 +3,12 @@
 
 include { FASTQC } from './modules/fastqc'
 include { CUTADAPT } from './modules/cutadapt'
+include { CUTADAPT_QC_NAME } from './modules/cutadapt_qc_name'
 include { HISAT2 } from './modules/hisat2'
 include { MULTIQC } from './modules/multiqc'
 include { SALMON_INDEX } from './modules/salmon_index'
 include { SALMON_QUANT } from './modules/salmon_quant'
 include { GET_STRAND } from './modules/get_strand'
-
 
 workflow ANALYSIS {
     take:
@@ -18,6 +18,7 @@ workflow ANALYSIS {
     data_flat = data.flatMap{ flatten_sample(it) }
     FASTQC(data_flat)
     CUTADAPT(data)
+    CUTADAPT_QC_NAME(CUTADAPT.out.qc)
 
     transcriptome = Channel.fromPath( params.transcriptome )
     SALMON_INDEX(transcriptome)
@@ -31,7 +32,7 @@ workflow ANALYSIS {
     // Combine + Collect QC reports
     qc_reports = Channel.of().concat( 
       FASTQC.out.zip,
-      CUTADAPT.out.qc,
+      CUTADAPT_QC_NAME.out.qc,
       SALMON_QUANT.out.quants,
       HISAT2.out.qc
     ).collect{ it[1] }
