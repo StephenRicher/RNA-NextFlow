@@ -25,5 +25,8 @@ samtools faidx gencode.v43.transcripts.fa.gz
 curl https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_43/gencode.v43.basic.annotation.gff3.gz \
 | zcat \
 | awk '$1=="chr22" && $3=="transcript" {print $9}' \
-| head \
-> tmp.gff3
+| awk -v FS=";|=" '{print $2}' \
+> gencode.v43.txid.chr22.txt
+
+samtools faidx gencode.v43.transcripts.fa.gz $(cat gencode.v43.txid.chr22.txt) \
+> gencode.v43.transcripts.chr22.fa
