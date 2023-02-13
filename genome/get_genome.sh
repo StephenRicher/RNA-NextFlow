@@ -15,3 +15,15 @@ hisat2-build --exon GRCh38.exon --ss GRCh38.ss GRCh38.chr22.fa GRCh38
 
 
 wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_43/gencode.v43.transcripts.fa.gz
+
+curl https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_43/gencode.v43.transcripts.fa.gz \
+| zcat \
+| sed s'/|.*//' \
+| bgzip > gencode.v43.transcripts.fa.gz
+samtools faidx gencode.v43.transcripts.fa.gz
+
+curl https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_43/gencode.v43.basic.annotation.gff3.gz \
+| zcat \
+| awk '$1=="chr22" && $3=="transcript" {print $9}' \
+| head \
+> tmp.gff3
