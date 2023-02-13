@@ -8,6 +8,6 @@ process FASTQC {
 
     script:
     """
-    fastqc $fastq
+    zcat -f $fastq | fastqc stdin:${id}
     """
 }
